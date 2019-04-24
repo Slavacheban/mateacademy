@@ -2,32 +2,45 @@ package dao;
 
 import lombok.extern.log4j.Log4j;
 import models.User;
-import utils.EntityManagerFactoryUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import utils.HibernateSessionFactoryUtil;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 @Log4j
 public class UserDaoImpl implements UserDao {
-    public EntityManager em = EntityManagerFactoryUtil.entityManagerFactory.createEntityManager();
 
-    public User get(int id) {
-        return em.find(User.class, id);
+    public User findById(int id) {
+        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(User.class, id);
     }
 
-    public void add(User user) {
-        em.getTransaction().begin();
-        em.persist(user);
-        em.getTransaction().commit();
+    public void save(User user) {
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        Transaction tx1 = session.beginTransaction();
+        session.save(user);
+        tx1.commit();
+        session.close();
     }
 
     public void update(User user) {
-        em.getTransaction().begin();
-        em.merge(user);
-        em.getTransaction().commit();
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        Transaction tx1 = session.beginTransaction();
+        session.update(user);
+        tx1.commit();
+        session.close();
+    }
+
+    public void delete(User user) {
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        Transaction tx1 = session.beginTransaction();
+        session.delete(user);
+        tx1.commit();
+        session.close();
     }
 
     public List<User> findAll() {
-        return null;
+        List<User> users = (List<User>)  HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("From User").list();
+        return users;
     }
 }

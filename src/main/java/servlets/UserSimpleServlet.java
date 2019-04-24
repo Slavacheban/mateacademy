@@ -24,36 +24,43 @@ public class UserSimpleServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         List<User> users = service.findAllUsers();
-        req.setAttribute("users", users);
-        RequestDispatcher dispatcher = req.getRequestDispatcher("/showUsers.jsp");
-        dispatcher.forward(req, resp);
+        request.setAttribute("users", users);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/showUsers.jsp");
+        dispatcher.forward(request, response);
 
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String name = req.getParameter("name");
-        int age = Integer.parseInt(req.getParameter("age"));
-        String city = req.getParameter("city");
+        String name = request.getParameter("name");
+        int age = Integer.parseInt(request.getParameter("age"));
+        String city = request.getParameter("city");
         User user = new User(name, age, city);
         service.saveUser(user);
-        resp.sendRedirect("/users");
+        response.sendRedirect("/users");
 
     }
 
     @Override
-    protected void	doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int id = Integer.parseInt(req.getParameter("id"));
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
         User user = service.findUser(id);
-        user.setName(req.getParameter("name"));
-        user.setAge(Integer.parseInt(req.getParameter("age")));
-        user.setCity(req.getParameter("city"));
+        user.setName(request.getParameter("name"));
+        user.setAge(Integer.parseInt(request.getParameter("age")));
+        user.setCity(request.getParameter("city"));
         service.updateUser(user);
-        resp.sendRedirect("/users");
+        response.sendRedirect("/users");
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse response) throws IOException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        service.deleteUser(service.findUser(id));
+        response.sendRedirect("/users");
     }
 }
